@@ -16,7 +16,7 @@ import reactor.core.publisher.Flux
 class ServiceApplication(val customerRepository: CustomerRepository) : ApplicationRunner {
 
     override fun run(p0: ApplicationArguments?) {
-        val flatMap = Flux.just("Jane", "Bob", "Michelle", "George")
+        val flatMap = Flux.just("Tammie", "Richard", "Michelle", "Mario")
                 .map { Customer(name = it) }
         customerRepository.saveAll(flatMap).subscribe()
     }
