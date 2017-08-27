@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import "rxjs/add/operator/toPromise";
 import {Customer} from "./customer";
 import {CustomerService} from "./customer.service";
-import {WebsocketService} from "./websocket.service";
+import {WebSocketService} from "./websocket.service";
 import {Observable} from "rxjs/Observable";
 
 @Component({
@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
   chatUrl = "ws://localhost:8080/websocket/updates";
   customers: Array<Customer>;
 
-  constructor(private customerService: CustomerService, private ws: WebsocketService) {
+  constructor(private customerService: CustomerService, private ws: WebSocketService) {
   }
 
   ngOnInit(): void {
@@ -33,8 +33,8 @@ export class AppComponent implements OnInit {
 
     const messages = this.ws.connect(this.chatUrl);
 
-    const updates: Observable<CustomerUpdatedMessage> = messages
-      .map((response: MessageEvent): CustomerUpdatedMessage => {
+    const updates: Observable<FileEvent> = messages
+      .map((response: MessageEvent) => {
         return JSON.parse(response.data);
       });
 
@@ -42,7 +42,15 @@ export class AppComponent implements OnInit {
   }
 }
 
-
-export interface CustomerUpdatedMessage {
-  date: Date;
+export interface FileEvent {
+  path: string;
+  sessionId: string;
 }
+
+/*
+
+
+ export interface CustomerUpdatedMessage {
+ date: Date;
+ }
+ */
