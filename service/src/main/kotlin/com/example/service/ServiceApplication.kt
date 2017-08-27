@@ -52,7 +52,7 @@ class WebSocketConfiguration {
 
         val webSocketHandler = WebSocketHandler { session ->
             val x = Flux.generate({ x: SynchronousSink<String> -> x.next(om.writeValueAsString(CustomerUpdateEvent(Date()))) })
-                    .delayElements(Duration.ofSeconds(1L))
+                    .delayElements(Duration.ofSeconds(20L))
                     .map { session.textMessage(it) }
             session.send(x)
         }

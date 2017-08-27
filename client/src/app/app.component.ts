@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+import {Component, OnInit} from "@angular/core";
+import "rxjs/add/operator/toPromise";
 import {Customer} from "./customer";
 import {CustomerService} from "./customer.service";
 import {WebsocketService} from "./websocket.service";
-import {Subject} from "rxjs/Subject";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-root',
@@ -20,25 +20,25 @@ import {Subject} from "rxjs/Subject";
 export class AppComponent implements OnInit {
 
   chatUrl = "ws://localhost:8080/websocket/updates";
-  updates: Subject<CustomerUpdatedMessage>;
   customers: Array<Customer>;
 
   constructor(private customerService: CustomerService, private ws: WebsocketService) {
   }
 
   ngOnInit(): void {
-    this.customerService.customers().subscribe(s => this.customers = s);
 
-    /*this.updates =*/
-    /*<Subject<CustomerUpdatedMessage>>*/
-    this.ws
-      .connect(this.chatUrl)
+    this.customerService
+      .customers()
+      .subscribe(s => this.customers = s);
+
+    const messages = this.ws.connect(this.chatUrl);
+
+    const updates: Observable<CustomerUpdatedMessage> = messages
       .map((response: MessageEvent): CustomerUpdatedMessage => {
-        const data = JSON.parse(response.data);
-        console.log(JSON.stringify(data));
-        return {date: data.date};
-      })
-      .subscribe();
+        return JSON.parse(response.data);
+      });
+
+    updates.subscribe(d => console.log(d));
   }
 }
 
