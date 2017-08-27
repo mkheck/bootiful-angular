@@ -1,10 +1,11 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
-import { AppComponent } from './app.component';
+import {AppComponent} from './app.component';
 import {HttpModule} from "@angular/http";
 import {FormsModule} from "@angular/forms";
 import {CustomerService} from "./customer.service";
+import {WebsocketService} from "./websocket.service";
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {CustomerService} from "./customer.service";
     FormsModule,
     BrowserModule
   ],
-  providers: [CustomerService],
+  providers: [CustomerService, WebsocketService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
