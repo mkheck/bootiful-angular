@@ -167,6 +167,7 @@ class ReactiveCustomerRestController(val customerRepository: CustomerRepository)
     fun customers(): Flux<Customer> = customerRepository.findAll()
 }
 
+// todo
 data class CustomerUpdateEvent(var date: Date)
 
 interface CustomerRepository : ReactiveMongoRepository<Customer, String>
