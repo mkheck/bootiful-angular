@@ -15,12 +15,18 @@ import {Observable} from "rxjs/Observable";
       <b>{{c.id}} </b>
       {{c.name}}
     </li>
+
+    <li *ngFor="let f of files">
+      {{f.sessionId}} {{f.path}}
+    </li>
+
   `
 })
 export class AppComponent implements OnInit {
 
   chatUrl = "ws://localhost:8080/websocket/updates";
   customers: Array<Customer>;
+  files: Array<FileEvent> = [];
 
   constructor(private customerService: CustomerService, private ws: WebSocketService) {
   }
@@ -38,7 +44,7 @@ export class AppComponent implements OnInit {
         return JSON.parse(response.data);
       });
 
-    updates.subscribe(d => console.log(d));
+    updates.subscribe((d: FileEvent) => this.files.push(d));
   }
 }
 
@@ -46,11 +52,3 @@ export interface FileEvent {
   path: string;
   sessionId: string;
 }
-
-/*
-
-
- export interface CustomerUpdatedMessage {
- date: Date;
- }
- */

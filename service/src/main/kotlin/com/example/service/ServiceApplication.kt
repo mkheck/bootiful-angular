@@ -44,6 +44,7 @@ class ServiceApplication(val customerRepository: CustomerRepository) {
         customerRepository
                 .deleteAll()
                 .thenMany(customerRepository.saveAll(flatMap))
+                .thenMany(customerRepository.findAll())
                 .subscribe({ println(it) })
     }
 }
