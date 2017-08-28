@@ -14,6 +14,7 @@ import org.springframework.integration.channel.PublishSubscribeChannel
 import org.springframework.integration.dsl.IntegrationFlow
 import org.springframework.integration.dsl.IntegrationFlows
 import org.springframework.integration.file.dsl.Files
+import org.springframework.messaging.Message
 import org.springframework.messaging.MessageHandler
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,6 +28,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.FluxSink
 import java.io.File
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 
 
@@ -74,23 +76,31 @@ class WebSocketConfiguration {
         val mapping = SimpleUrlHandlerMapping()
         val channel = filesChannel()
         val webSocketHandler = WebSocketHandler { session ->
-            val publisher = Flux.create(Consumer<FluxSink<WebSocketMessage>> { sink ->
 
-                val incomingFiles = MessageHandler {
-                    val payload = it.payload as File
-                    val updatedPayload = mapOf<String, String>("sessionId" to session.id, "path" to payload.absolutePath)
-                    val jsonPayload = om.writeValueAsString(updatedPayload)
+            class ProcessingMessageHandler(val sessionId: String, val sink: FluxSink<WebSocketMessage>) : MessageHandler {
+
+                private val om = ObjectMapper()
+
+                override fun handleMessage(p0: Message<*>) {
+                    val payload = p0.payload as File
+                    val updatedPayload = mapOf("sessionId" to sessionId, "path" to payload.absolutePath)
+                    val jsonPayload = this.om.writeValueAsString(updatedPayload)
                     sink.next(session.textMessage(jsonPayload))
                 }
+            }
 
-                session.receive().doFinally({
-                    channel.unsubscribe(incomingFiles)
-                    println( "ending the Spring Integration subscription for session ${session.id}")
-                })
+            val mapOfIntegrations = ConcurrentHashMap<String, ProcessingMessageHandler>()
 
-                channel.subscribe(incomingFiles)
-
-            })
+            val publisher = Flux
+                    .create(Consumer<FluxSink<WebSocketMessage>> { sink ->
+                        val incomingFiles = ProcessingMessageHandler(session.id, sink)
+                        mapOfIntegrations.put(session.id, incomingFiles)
+                        channel.subscribe(incomingFiles)
+                    })
+                    .doFinally({
+                        channel.unsubscribe(mapOfIntegrations[session.id])
+                        mapOfIntegrations.remove(session.id)
+                    })
             session.send(publisher)
         }
 
