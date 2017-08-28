@@ -31,7 +31,6 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 
-
 @SpringBootApplication
 class ServiceApplication(val customerRepository: CustomerRepository) {
 
@@ -70,7 +69,6 @@ class WebSocketConfiguration {
                 .channel(this.filesChannel())
                 .get()
     }
-
 
     @Bean
     fun webSocketHandlerMapping(): HandlerMapping {

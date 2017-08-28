@@ -5,7 +5,6 @@ import {AppComponent} from './app.component';
 import {HttpModule} from "@angular/http";
 import {FormsModule} from "@angular/forms";
 import {CustomerService} from "./customer.service";
-import {WebSocketService} from "./websocket.service";
 
 @NgModule({
   declarations: [
@@ -16,7 +15,7 @@ import {WebSocketService} from "./websocket.service";
     FormsModule,
     BrowserModule
   ],
-  providers: [CustomerService, WebSocketService],
+  providers: [CustomerService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
