@@ -81,8 +81,8 @@
     ],
     "prefer-const": true,
     "quotemark": [
-      true //,
-//      "single"
+      true,
+      "single"
     ],
     "radix": true,
     "semicolon": [
