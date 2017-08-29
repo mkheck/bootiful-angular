@@ -2,14 +2,20 @@ import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  template: `
+    <div>
+      <ol>
+        <li *ngFor="let f of files">
+          {{f.sessionId}} <b> {{f.path}}</b>
+        </li>
+      </ol>
+    </div>
+  `
 })
 export class AppComponent implements OnInit {
 
-  title = 'app';
   files: Array<FileEvent> = [];
-  ws = new WebSocket('ws://localhost:8080/websocket/updates');
+  private ws = new WebSocket('ws://localhost:8080/websocket/updates');
 
   ngOnInit(): void {
     this.ws.onopen = (openEvent: Event) => {
